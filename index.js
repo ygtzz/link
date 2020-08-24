@@ -50,7 +50,8 @@ class Scene{
         //绘制文字
         ctx.fillStyle = item.fontColor || '#333';
         ctx.font = item.font;
-        ctx.fillText(item.text ,x,y+30); //设置文本内容
+        console.log(item.font,parseInt(item.font))
+        ctx.fillText(item.text ,x, y + item.height + parseInt(item.font)); //设置文本内容
     }
     rotate(ctx,item) {
         let mx = item.x, my = item.y;
