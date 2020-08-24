@@ -44,14 +44,22 @@ class Scene{
         if(typeof y === 'undefined') y = item.y;
         ctx.globalAlpha = item.alpha;
         ctx.scale(item.scaleX,item.scaleY);
+
+        item.draw(ctx,x,y);
+
         //绘制矩形
-        ctx.fillStyle = item.color || 'cornflowerblue';
-        ctx.fillRect(x,y,item.width,item.height);
-        //绘制文字
-        ctx.fillStyle = item.fontColor || '#333';
-        ctx.font = item.font;
-        console.log(item.font,parseInt(item.font))
-        ctx.fillText(item.text ,x, y + item.height + parseInt(item.font)); //设置文本内容
+        // ctx.fillStyle = item.color;
+        // ctx.fillRect(x,y,item.width,item.height);
+        // //绘制文字
+        // ctx.fillStyle = item.fontColor;
+        // ctx.font = item.font;
+        // console.log(item.font,parseInt(item.font))
+        // let font = parseInt(item.font);
+        // if(isNaN(font)){
+        //     font = 12;
+        // }
+        // let fontOffset = item.height + parseInt(item.font);
+        // ctx.fillText(item.text, x, y + fontOffset); //设置文本内容
     }
     rotate(ctx,item) {
         let mx = item.x, my = item.y;
@@ -68,9 +76,16 @@ class Scene{
 
 //NodeBase
 class Shape{
-    constructor(x,y){
-        this.x = x;
-        this.y = y;
+    constructor(){
+        this.x = 0;
+        this.y = 0;
+        this.width = 35;
+        this.height = 35;
+        this.color = 'cornflowerblue';
+        this.alpha = 1;
+        this.rotate = 0;
+        this.scaleX = 1;
+        this.scaleY = 1;
     }
     setLoc(x,y){
         this.x = x;
@@ -79,27 +94,55 @@ class Shape{
     getLoc(){
         return [this.x,this.y];
     }
+    draw(){
+        console.log('draw shape');
+    }
 }
 
 //Node
-class Node extends Shape{
+class Node{
     constructor(text){
-        super();
-        // this.shape = '';
-        this.x = 0;
-        this.y = 0;
-        this.width = 35;
-        this.height = 35;
-        this.text = text;
-        this.font = '';
-        this.fontColor = '';
-        this.alpha = 1;
-        this.rotate = 0;
-        this.scaleX = 1;
-        this.scaleY = 1;
+        this.word = text;
+    }
+    setLoc(x,y){
+        this.x = x;
+        this.y = y;
     }
     setImage(url){
 
+    }
+    draw(ctx,x,y){
+        this.shape = new NodeShape({
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height,
+            color: this.color,
+            alpha: this.alpha,
+            rotate: this.rotate,
+            scaleX: this.scaleX,
+            scaleY: this.scaleY
+        });
+        this.text = new Text({
+            text: this.word,
+            font: this.font,
+            fontColor: this.fontColor
+        });
+        this.shape.draw(ctx,x,y);
+        this.text.draw(ctx,x,y);
+    }
+}
+
+class NodeShape extends Shape{
+    constructor(opts){
+        super();
+        //属性赋值
+        nodeAssign(opts,this);
+    }
+    draw(ctx,x,y){
+        //绘制矩形
+        ctx.fillStyle = this.color;
+        ctx.fillRect(x,y,this.width,this.height);
     }
 }
 
@@ -112,15 +155,42 @@ class Link extends Shape{
 
 //Text
 class Text extends Shape{
-    constructor(txt,font){
-        this.txt = text;
-        this.font = font;
+    constructor(opts){
+        super();
+        this.text = 'defalut';
+        this.font = '12px';
+        this.fontColor = '#333';
+        //属性赋值
+        nodeAssign(opts,this);
+    }
+    draw(ctx,x,y){
+        ctx.fillStyle = this.fontColor;
+        ctx.font = this.font;
+        let font = parseInt(this.font);
+        if(isNaN(font)){
+            font = 12;
+        }
+        let fontOffset = this.height + parseInt(this.font);
+        ctx.fillText(this.text, x, y + fontOffset);
     }
 }
 
 //Group
-
+class Group{
+    constructor(){
+        this.node = null;
+        this.text = null;
+    }
+}
 //Animate
 
 
+function nodeAssign(opts,target){
+     //属性赋值
+     Object.keys(opts).forEach(k => {
+        if(typeof opts[k] !== 'undefined'){
+            target[k] = opts[k];
+        }
+    })
+}
 
