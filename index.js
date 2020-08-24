@@ -44,8 +44,10 @@ class Scene{
         if(typeof y === 'undefined') y = item.y;
         ctx.globalAlpha = item.alpha;
         ctx.scale(item.scaleX,item.scaleY);
-        ctx.font = item.font;
-        ctx.fillText(item.text ,x,y); //设置文本内容
+        ctx.fillStyle = item.color || 'cornflowerblue';
+        ctx.fillRect(x,y,item.width,item.height);
+        // ctx.font = item.font;
+        // ctx.fillText(item.text ,x,y); //设置文本内容
     }
     rotate(ctx,item) {
         let mx = item.x, my = item.y;
@@ -79,6 +81,11 @@ class Shape{
 class Node extends Shape{
     constructor(text){
         super();
+        // this.shape = '';
+        this.x = 0;
+        this.y = 0;
+        this.width = 35;
+        this.height = 35;
         this.text = text;
         this.font = '';
         this.fontColor = '';
@@ -86,6 +93,9 @@ class Node extends Shape{
         this.rotate = 0;
         this.scaleX = 1;
         this.scaleY = 1;
+    }
+    setImage(url){
+
     }
 }
 
