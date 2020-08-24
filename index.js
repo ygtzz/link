@@ -44,10 +44,13 @@ class Scene{
         if(typeof y === 'undefined') y = item.y;
         ctx.globalAlpha = item.alpha;
         ctx.scale(item.scaleX,item.scaleY);
+        //绘制矩形
         ctx.fillStyle = item.color || 'cornflowerblue';
         ctx.fillRect(x,y,item.width,item.height);
-        // ctx.font = item.font;
-        // ctx.fillText(item.text ,x,y); //设置文本内容
+        //绘制文字
+        ctx.fillStyle = item.fontColor || '#333';
+        ctx.font = item.font;
+        ctx.fillText(item.text ,x,y+30); //设置文本内容
     }
     rotate(ctx,item) {
         let mx = item.x, my = item.y;
