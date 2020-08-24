@@ -21,11 +21,15 @@
         node1.setLoc(300,200);
 
         let node2 = new Node('bbbb');
-        node2.font = '30px Verdana';
+        // node2.font = '30px Verdana';
         node2.setLoc(200,300);
 
         scene.add(node1);
         scene.add(node2);
+
+        setTimeout(() => {
+            scene.remove(node1);
+        },3000);
     </script>
 </body>
 </html>

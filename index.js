@@ -4,6 +4,8 @@ class Stage{
         if(typeof canvas == 'string') canvas = document.getElementById(canvas);
         this.cvs = canvas;
         this.ctx = canvas.getContext('2d');
+        this.width = canvas.getAttribute('width');
+        this.height = canvas.getAttribute('height');
     }
 }
 
@@ -14,17 +16,26 @@ class Scene{
         this.nodes = [];
     }
     add(node){
+        node._scene = this;
         this.nodes.push(node);
         this.draw();
     }
+    remove(node){
+        this.nodes = this.nodes.filter(item => item != node);
+        this.draw();
+    }
     draw(){
-        let ctx = this.stage.ctx;
+        this.clean();
 
-        
+        let ctx = this.stage.ctx;
         this.nodes.forEach(item => {
             ctx.font = item.font;
             ctx.fillText(item.text ,item.x ,item.y); //设置文本内容
         })
+    }
+    clean(){
+        let ctx = this.stage.ctx;
+        ctx.clearRect(0,0,this.stage.width,this.stage.height);
     }
 }
 
