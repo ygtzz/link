@@ -29,9 +29,30 @@ class Scene{
 
         let ctx = this.stage.ctx;
         this.nodes.forEach(item => {
-            ctx.font = item.font;
-            ctx.fillText(item.text ,item.x ,item.y); //设置文本内容
+            ctx.save();
+            if(item.rotate){
+                this.rotate(ctx,item);
+            }
+            else{
+                this.drawNode(ctx,item);
+            }
+            ctx.restore();
         })
+    }
+    drawNode(ctx,item,x,y){
+        if(typeof x === 'undefined') x = item.x;
+        if(typeof y === 'undefined') y = item.y;
+        ctx.globalAlpha = item.alpha;
+        ctx.scale(item.scaleX,item.scaleY);
+        ctx.font = item.font;
+        ctx.fillText(item.text ,x,y); //设置文本内容
+    }
+    rotate(ctx,item) {
+        let mx = item.x, my = item.y;
+        ctx.translate(mx, my); // 将画布的原点移动到正中央
+        ctx.rotate((Math.PI / 180) * item.rotate); // 弧度 = (Math.PI/180)*角度
+        this.drawNode(ctx,item,0,0);
+        ctx.translate(-mx, -my); // 将画布的原点还原
     }
     clean(){
         let ctx = this.stage.ctx;
@@ -61,6 +82,10 @@ class Node extends Shape{
         this.text = text;
         this.font = '';
         this.fontColor = '';
+        this.alpha = 1;
+        this.rotate = 0;
+        this.scaleX = 1;
+        this.scaleY = 1;
     }
 }
 
