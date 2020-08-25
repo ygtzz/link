@@ -17,7 +17,10 @@ class Scene{
     }
     add(node){
         node._scene = this;
+        node._stage = this.stage;
+        node._ctx = this.stage.ctx;
         this.nodes.push(node);
+        //TODO debounce操作
         this.draw();
     }
     remove(node){
@@ -73,7 +76,7 @@ class Node{
         this.y = y;
     }
     setImage(url){
-
+        this.url = url;
     }
     draw(ctx){
         ctx.save();
@@ -86,10 +89,9 @@ class Node{
         ctx.restore();
     }
     rotate(ctx) {
-        let item = this;
-        let mx = item.x, my = item.y;
+        let mx = this.x, my = this.y;
         ctx.translate(mx, my); // 将画布的原点移动到正中央
-        ctx.rotate((Math.PI / 180) * item.rotate); // 弧度 = (Math.PI/180)*角度
+        ctx.rotate((Math.PI / 180) * this.rotate); // 弧度 = (Math.PI/180)*角度
         this.drawNode(ctx,0,0);
         ctx.translate(-mx, -my); // 将画布的原点还原
     }
@@ -100,6 +102,7 @@ class Node{
         ctx.scale(this.scaleX,this.scaleY);
         
         this.shape = new NodeShape({
+            _node: this,
             x: this.x,
             y: this.y,
             width: this.width,
@@ -108,9 +111,11 @@ class Node{
             alpha: this.alpha,
             rotate: this.rotate,
             scaleX: this.scaleX,
-            scaleY: this.scaleY
+            scaleY: this.scaleY,
+            url: this.url
         });
         this.text = new Text({
+            _node: this,
             text: this.word,
             font: this.font,
             fontColor: this.fontColor
@@ -123,13 +128,29 @@ class Node{
 class NodeShape extends Shape{
     constructor(opts){
         super();
+        this._node = opts._node;
         //属性赋值
         nodeAssign(opts,this);
     }
     draw(ctx,x,y){
-        //绘制矩形
-        ctx.fillStyle = this.color;
-        ctx.fillRect(x,y,this.width,this.height);
+        //绘制图片
+        if(this.url){
+            this.drawImage(ctx,this.url);
+        }
+        else{
+            //绘制矩形
+            ctx.fillStyle = this.color;
+            ctx.fillRect(x,y,this.width,this.height);
+        }
+    }
+    drawImage(ctx,url){
+        let self = this;
+        let img = new Image();
+        img.onload = function(){
+            //绘制图片，并缩放至和shape一样大小
+            ctx.drawImage(img,self.x,self.y,self.width,self.height);
+        }
+        img.src = url;
     }
 }
 
