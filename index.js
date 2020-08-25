@@ -29,44 +29,8 @@ class Scene{
 
         let ctx = this.stage.ctx;
         this.nodes.forEach(item => {
-            ctx.save();
-            if(item.rotate){
-                this.rotate(ctx,item);
-            }
-            else{
-                this.drawNode(ctx,item);
-            }
-            ctx.restore();
+            item.draw(ctx);
         })
-    }
-    drawNode(ctx,item,x,y){
-        if(typeof x === 'undefined') x = item.x;
-        if(typeof y === 'undefined') y = item.y;
-        ctx.globalAlpha = item.alpha;
-        ctx.scale(item.scaleX,item.scaleY);
-
-        item.draw(ctx,x,y);
-
-        //绘制矩形
-        // ctx.fillStyle = item.color;
-        // ctx.fillRect(x,y,item.width,item.height);
-        // //绘制文字
-        // ctx.fillStyle = item.fontColor;
-        // ctx.font = item.font;
-        // console.log(item.font,parseInt(item.font))
-        // let font = parseInt(item.font);
-        // if(isNaN(font)){
-        //     font = 12;
-        // }
-        // let fontOffset = item.height + parseInt(item.font);
-        // ctx.fillText(item.text, x, y + fontOffset); //设置文本内容
-    }
-    rotate(ctx,item) {
-        let mx = item.x, my = item.y;
-        ctx.translate(mx, my); // 将画布的原点移动到正中央
-        ctx.rotate((Math.PI / 180) * item.rotate); // 弧度 = (Math.PI/180)*角度
-        this.drawNode(ctx,item,0,0);
-        ctx.translate(-mx, -my); // 将画布的原点还原
     }
     clean(){
         let ctx = this.stage.ctx;
@@ -111,7 +75,30 @@ class Node{
     setImage(url){
 
     }
-    draw(ctx,x,y){
+    draw(ctx){
+        ctx.save();
+        if(this.rotate){
+            this.rotate(ctx);
+        }
+        else{
+            this.drawNode(ctx,x,y);
+        }
+        ctx.restore();
+    }
+    rotate(ctx) {
+        let item = this;
+        let mx = item.x, my = item.y;
+        ctx.translate(mx, my); // 将画布的原点移动到正中央
+        ctx.rotate((Math.PI / 180) * item.rotate); // 弧度 = (Math.PI/180)*角度
+        this.drawNode(ctx,0,0);
+        ctx.translate(-mx, -my); // 将画布的原点还原
+    }
+    drawNode(ctx,x,y){
+        if(typeof x === 'undefined') x = this.x;
+        if(typeof y === 'undefined') y = this.y;
+        ctx.globalAlpha = this.alpha;
+        ctx.scale(this.scaleX,this.scaleY);
+        
         this.shape = new NodeShape({
             x: this.x,
             y: this.y,
